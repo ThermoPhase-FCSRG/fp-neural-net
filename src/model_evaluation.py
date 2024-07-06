@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import uuid
 
 from sklearn.model_selection import KFold
 
@@ -12,7 +13,7 @@ class ModelEvaluation:
 
     def __split_features_and_labels(self) -> None:
         self.X = self.df.iloc[:, 1:].values
-        self.y = self.df.iloc[:, 1].values
+        self.y = self.df.iloc[:, 0].values
 
     def evaluate_cv(self) -> None:
         self.__split_features_and_labels()
@@ -25,7 +26,9 @@ class ModelEvaluation:
             X_train, X_test = self.X[train_idx], self.X[test_idx]
             y_train, y_test = self.y[train_idx], self.y[test_idx]
 
-            nn_exec = NeuralNet(X_train, X_test, y_train, y_test)
+            model_id = uuid.uuid4()
+
+            nn_exec = NeuralNet(X_train, X_test, y_train, y_test, model_id)
             mae, mse = nn_exec.execute_training_steps()
 
             mae_list.append(mae)

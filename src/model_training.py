@@ -1,6 +1,8 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import pickle as pkl
 
+from sklearn.metrics import r2_score
 from sklearn.preprocessing import StandardScaler
 from tensorflow import keras
 from keras import layers, models, utils
@@ -17,11 +19,13 @@ class NeuralNet:
         X_test: np.ndarray,
         y_train: np.ndarray,
         y_test: np.ndarray,
+        model_id: str,
     ) -> None:
         self.X_train = X_train
         self.X_test = X_test
         self.y_train = y_train
         self.y_test = y_test
+        self.model_id = model_id
 
     def __scale_features(self) -> None:
         # Define the scaler
@@ -62,12 +66,12 @@ class NeuralNet:
         self.nn_model = self.__build_model()
 
         # Add an early stopping
-        stop_early = keras.callbacks.EarlyStopping(monitor="val_mse", patience=300)
+        stop_early = keras.callbacks.EarlyStopping(monitor="val_mse", patience=500)
         self.nn_model.fit(
             self.scaled_X_train,
             self.y_train,
             batch_size=self.scaled_X_train.shape[0],
-            epochs=3000,
+            epochs=5000,
             validation_data=(self.scaled_X_test, self.y_test),
             callbacks=[stop_early],
             verbose=0,
@@ -78,14 +82,44 @@ class NeuralNet:
 
         print(f"MAE - {self.mae}\nRMSE - {np.sqrt(self.mse)}")
 
+    def __plot_predicted_vs_experimental(self) -> None:
+        # Get predicted values
+        y_pred = self.nn_model.predict(self.scaled_X_test)
+
+        # Calculate R²
+        r2 = r2_score(self.y_test, y_pred)
+
+        # Plot the scatter plot
+        plt.scatter(self.y_test, y_pred, label=f"R² = {r2:.4f}")
+        plt.xlabel("Valores experimentais - (K)")
+        plt.ylabel("Valores preditos - (K)")
+        plt.axis("equal")
+        plt.axis("square")
+        plt.xlim([250, plt.xlim()[1]])
+        plt.ylim([250, plt.ylim()[1]])
+
+        # Plot ideal line - Predicted value equal to Experimental
+        plt.plot(
+            [250, max(plt.xlim()[1], plt.ylim()[1])],
+            [250, max(plt.xlim()[1], plt.ylim()[1])],
+            linestyle="--",
+            color="gray",
+            label="Ideal line",
+        )
+
+        plt.legend(loc="upper left")
+        plt.show()
+
     def __save_model(self) -> None:
         # Fitted model
         models.save_model(
-            self.nn_model, "C:/Projetos/fp-neural-net/models/fitted_nn.keras"
+            self.nn_model, f"C:/Projetos/fp-neural-net/models/{self.model_id}.keras"
         )
 
         # Fitted scaler
-        with open("C:/Projetos/fp-neural-net/models/fitted_scaler.pkl", "wb") as f:
+        with open(
+            f"C:/Projetos/fp-neural-net/models/scaler_{self.model_id}.pkl", "wb"
+        ) as f:
             pkl.dump(self.scaler, f)
 
         print("Model and scaler were succesfully saved")
@@ -94,6 +128,7 @@ class NeuralNet:
         self.__scale_features()
         self.__train_model()
         self.__model_metrics()
+        self.__plot_predicted_vs_experimental()
         self.__save_model()
 
         return self.mae, self.mse
