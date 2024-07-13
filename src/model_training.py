@@ -91,8 +91,8 @@ class NeuralNet:
 
         # Plot the scatter plot
         plt.scatter(self.y_test, y_pred, label=f"R² = {r2:.4f}")
-        plt.xlabel("Valores experimentais - (K)")
-        plt.ylabel("Valores preditos - (K)")
+        plt.xlabel("Experimental values - (K)")
+        plt.ylabel("Predicted values - (K)")
         plt.axis("equal")
         plt.axis("square")
         plt.xlim([250, plt.xlim()[1]])

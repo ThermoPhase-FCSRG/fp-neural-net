@@ -9,7 +9,7 @@ from .model_training import NeuralNet
 
 class ModelEvaluation:
     def __init__(self) -> None:
-        self.df = pd.read_csv("data/TCC_data.csv")
+        self.df = pd.read_csv("data/training_data.csv")
 
     def __split_features_and_labels(self) -> None:
         self.X = self.df.iloc[:, 1:].values
