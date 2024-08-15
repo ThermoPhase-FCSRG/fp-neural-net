@@ -40,7 +40,7 @@ class NeuralNet:
         model = keras.Sequential(
             [
                 layers.Dense(
-                    64,
+                    16,
                     activation="relu",
                     input_shape=[self.scaled_X_train.shape[1]],
                     kernel_regularizer=keras.regularizers.L1L2(l1=0.001, l2=0.001),
