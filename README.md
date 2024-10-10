@@ -1,6 +1,8 @@
 # Biofuels flash point modelling using neural networks
 
-In this project, I've developed a neural network model capable of predicting the flash point of biofuel mixtures using simple features, such as the average molar mass of the mixture, the natural logarithm of the average vapor pressure, and the experimental method.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13912247.svg)](https://doi.org/10.5281/zenodo.13912247)
+
+In this project, we have developed a neural network model capable of predicting the flash point of biofuel mixtures using simple features, such as the average molar mass of the mixture, the natural logarithm of the average vapor pressure, and the experimental method.
 
 
 ## Supporting material
@@ -28,18 +30,18 @@ After creating the virtual environment, activate it:
     ```
 Now, install the required dependencies:
 ```shell
-pip install .
+pip install fpnn
 ```
 
 To install the optional dependencies as well, run:
 ```shell
-pip install .[dev]
+pip install fpnn[dev]
 ```
 
 ## Usage
 
-In the ```notebooks``` directory, there is a single notebook where I have completed an entire case study for my paper. You can reproduce each step that I followed during my work.
+In the ```notebooks``` directory, there is a single notebook where the entire case study for the paper has been completed. Each step followed during the work can be reproduced.
 
 ## Contact
 
-Please feel free to contact me if you have interesting in something, question, etc.
+Please feel free to contact us or open an issue/discussion if you have interesting in something, question, etc. You can also send an email to m241948@dac.unicamp.br if more convenient for you.

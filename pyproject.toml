@@ -15,7 +15,15 @@ dependencies = [
 ]
 requires-python = ">3.10"
 authors = [
-    {name = "Mauricio Souza", email = "m241948@dac.unicamp.br"}
+    {name = "Mauricio Prado de Omena Souza", email = "m241948@dac.unicamp.br"},
+    {name = "Débora Costa do Nascimento", email = "debora.costa.nasc@gmail.com"},
+    {name = "Diego Tavares Volpatto", email = "dtvolpatto@gmail.com"},
+    {name = "Gustavo Gondran Ribeiro", email = "ggrbill@gmail.com"},
+    {name = "Antonio Marinho Barbosa Neto", email = "marinhoengenharias@gmail.com"},
+    {name = "Mariana Conceição da Costa", email = "mcdcosta@unicamp.br"}
+]
+maintainers = [
+    {name = "Mauricio Prado de Omena Souza", email = "m241948@dac.unicamp.br"}
 ]
 description = "This project consists in the use of feed forward neural networks to predict the flash point of biofuels"
 readme = "README.md"
