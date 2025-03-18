@@ -1,3 +1,4 @@
+from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle as pkl
@@ -6,8 +7,6 @@ from sklearn.metrics import r2_score
 from sklearn.preprocessing import StandardScaler
 from tensorflow import keras
 from keras import layers, models, utils
-
-from fpnn.path_resources import MODELS_PATH
 
 # Set a random seed
 utils.set_random_seed(42)
@@ -76,6 +75,7 @@ class NeuralNet:
             validation_data=(self.scaled_X_test, self.y_test),
             callbacks=[stop_early],
             verbose=0,
+            workers=-1,
         )
 
     def __model_metrics(self) -> None:
@@ -111,25 +111,26 @@ class NeuralNet:
         plt.legend(loc="upper left")
         plt.show()
 
-    def __save_model(self) -> None:
+    def __save_model(self, save_model_path: Path) -> None:
         # Fitted model
         models.save_model(
-            self.nn_model, MODELS_PATH / f"{self.model_id}.keras"
+            self.nn_model, save_model_path / f"{self.model_id}.keras"
         )
 
         # Fitted scaler
         with open(
-            MODELS_PATH / f"scaler_{self.model_id}.pkl", "wb"
+            save_model_path / f"scaler_{self.model_id}.pkl", "wb"
         ) as f:
             pkl.dump(self.scaler, f)
 
         print("Model and scaler were succesfully saved")
 
-    def execute_training_steps(self) -> tuple[float, float]:
+    def execute_training_steps(self, *, save_model_path: Path | None = None) -> tuple[float, float]:
         self.__scale_features()
         self.__train_model()
         self.__model_metrics()
         self.__plot_predicted_vs_experimental()
-        self.__save_model()
+        if save_model_path is not None:
+            self.__save_model(save_model_path)
 
         return self.mae, self.mse
