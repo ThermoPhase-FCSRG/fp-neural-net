@@ -1,15 +1,17 @@
 from pathlib import Path
+from typing import Sequence
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle as pkl
 
 from sklearn.metrics import r2_score
 from sklearn.preprocessing import StandardScaler
-from tensorflow import keras
+from tensorflow import keras, random
 from keras import layers, models, utils
 
 # Set a random seed
 utils.set_random_seed(42)
+random.set_seed(42)
 
 
 class NeuralNet:
@@ -20,12 +22,31 @@ class NeuralNet:
         y_train: np.ndarray,
         y_test: np.ndarray,
         model_id: str,
+        epochs: int = 5000,
+        l1_penalty: float = 0.001,
+        l2_penalty: float = 0.001,
+        workers: int = 1,
+        *,
+        hidden_layers_layout: Sequence[int] = (16, 32, 16),
+        activation_functions: str | tuple[str, ...] = "relu"
     ) -> None:
         self.X_train = X_train
         self.X_test = X_test
         self.y_train = y_train
         self.y_test = y_test
         self.model_id = model_id
+        self.epochs = epochs
+        self.l1_penalty = l1_penalty
+        self.l2_penalty = l2_penalty
+        self.workers = workers
+        self.hidden_layers_layout = hidden_layers_layout
+        if type(activation_functions) is str:
+            self.activation_functions = (activation_functions,) * len(self.hidden_layers_layout)
+        else:
+            msg_layout_compatibility = "The number of activation functions should match the number of hidden layers"
+            assert len(activation_functions) == len(self.hidden_layers_layout), msg_layout_compatibility
+            assert type(activation_functions) == tuple[str, ...]
+            self.activation_functions = activation_functions
 
     def __scale_features(self) -> None:
         # Define the scaler
@@ -37,27 +58,27 @@ class NeuralNet:
         self.scaled_X_test = self.scaler.transform(self.X_test)
 
     def __build_model(self) -> models.Model:
-        model = keras.Sequential(
-            [
+        model = keras.Sequential()
+        
+        # Add input layer to the NN model  
+        model.add(layers.Input(shape=(self.scaled_X_train.shape[1],)))
+        
+        # Add hidden layers to the NN model
+        for layer_units, activation_function in zip(self.hidden_layers_layout, self.activation_functions):
+            model.add(
                 layers.Dense(
-                    16,
-                    activation="relu",
-                    input_shape=[self.scaled_X_train.shape[1]],
-                    kernel_regularizer=keras.regularizers.L1L2(l1=0.001, l2=0.001),
-                ),
-                layers.Dense(
-                    32,
-                    activation="relu",
-                    kernel_regularizer=keras.regularizers.L1L2(l1=0.001, l2=0.001),
-                ),
-                layers.Dense(
-                    16,
-                    activation="relu",
-                    kernel_regularizer=keras.regularizers.L1L2(l1=0.001, l2=0.001),
-                ),
-                layers.Dense(1),
-            ]
-        )
+                    layer_units, 
+                    activation=activation_function,
+                    kernel_regularizer=keras.regularizers.L1L2(
+                        l1=self.l1_penalty, l2=self.l2_penalty
+                    )
+                )
+            )
+        
+        # Add output (target prediction) layer
+        model.add(layers.Dense(1, activation="linear"))
+        
+        # Compile the resulting NN model
         model.compile(loss="mse", optimizer="adam", metrics=["mae", "mse"])
 
         return model
@@ -71,11 +92,12 @@ class NeuralNet:
             self.scaled_X_train,
             self.y_train,
             batch_size=self.scaled_X_train.shape[0],
-            epochs=5000,
+            epochs=self.epochs,
             validation_data=(self.scaled_X_test, self.y_test),
             callbacks=[stop_early],
             verbose=0,
-            workers=-1,
+            workers=self.workers,
+            use_multiprocessing=True if self.workers != 1 else False
         )
 
     def __model_metrics(self) -> None:
