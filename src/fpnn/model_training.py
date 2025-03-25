@@ -9,6 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from tensorflow import keras, random, data
 from keras import layers, models, utils
 
+
 # Set a random seed
 utils.set_random_seed(42)
 random.set_seed(42)
@@ -161,12 +162,12 @@ class NeuralNet:
     def __save_model(self, save_model_path: Path) -> None:
         # Fitted model
         models.save_model(
-            self.nn_model, save_model_path / f"{self.model_id}.keras"
+            self.nn_model, f"C:/Projetos/fp-neural-net/models/{self.model_id}.keras"
         )
 
         # Fitted scaler
         with open(
-            save_model_path / f"scaler_{self.model_id}.pkl", "wb"
+            f"C:/Projetos/fp-neural-net/models/scaler_{self.model_id}.pkl", "wb"
         ) as f:
             pkl.dump(self._scaler, f)
 
