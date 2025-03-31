@@ -13,10 +13,14 @@ The experimental flash point data for 1-butanol and Fatty Acid Ethyl Esters, use
 
 ## Installing dependencies
 
-Before installing the required dependencies, it's important to create a Python virtual environment, preferably using Python version 3.10.
+Before installing the required dependencies, it's important to create a Python virtual environment, preferably using Python version 3.10:
 
 ```shell
 python -m venv .venv
+```
+or (depending on your OS)
+```shell
+python3 -m venv .venv
 ```
 
 After creating the virtual environment, activate it:
@@ -30,17 +34,18 @@ After creating the virtual environment, activate it:
     ```
 Now, install the required dependencies:
 ```shell
-pip install fpnn
+pip install -e "."
 ```
 
 To install the optional dependencies as well, run:
 ```shell
-pip install fpnn[dev]
+pip install -e ".[dev]"
 ```
 
 ## Usage
 
 In the ```notebooks``` directory, there is a single notebook where the entire case study for the paper has been completed. Each step followed during the work can be reproduced.
+Note that you should install the Python Notebook to your virtual env.
 
 ## Contact
 
