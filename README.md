@@ -1,6 +1,6 @@
 # Biofuels flash point modelling using neural networks
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13912247.svg)](https://doi.org/10.5281/zenodo.13912247)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15112682.svg)](https://doi.org/10.5281/zenodo.15112682)
 
 In this project, we have developed a neural network model capable of predicting the flash point of biofuel mixtures using simple features, such as the average molar mass of the mixture, the natural logarithm of the average vapor pressure, and the experimental method.
 
