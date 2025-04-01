@@ -93,7 +93,7 @@ class NeuralNet:
         self, X, y, *, buffer_size: int = 1024
     ) -> data.Dataset:
         converted_X_y_as_dataset = data.Dataset.from_tensor_slices((X, y))
-        converted_X_y_as_dataset = converted_X_y_as_dataset.shuffle(buffer_size=1024)
+        converted_X_y_as_dataset = converted_X_y_as_dataset.shuffle(buffer_size=buffer_size)
         converted_X_y_as_dataset = converted_X_y_as_dataset.batch(buffer_size)
         converted_X_y_as_dataset = converted_X_y_as_dataset.prefetch(data.AUTOTUNE)
         return converted_X_y_as_dataset
@@ -123,7 +123,7 @@ class NeuralNet:
             callbacks=[stop_early],
             verbose=0,
             workers=self.workers,
-            use_multiprocessing=True if self.workers != 1 else False
+            use_multiprocessing=False if self.workers == 1 else True
         )
 
     def __model_metrics(self) -> None:
@@ -162,23 +162,25 @@ class NeuralNet:
     def __save_model(self, save_model_path: Path) -> None:
         # Fitted model
         models.save_model(
-            self.nn_model, f"C:/Projetos/fp-neural-net/models/{self.model_id}.keras"
+            self.nn_model, save_model_path / f"{self.model_id}.keras"
         )
 
         # Fitted scaler
         with open(
-            f"C:/Projetos/fp-neural-net/models/scaler_{self.model_id}.pkl", "wb"
+            save_model_path / f"scaler_{self.model_id}.pkl", "wb"
         ) as f:
             pkl.dump(self._scaler, f)
 
         print("Model and scaler were succesfully saved")
 
-    def execute_training_steps(self, *, save_model_path: Path | None = None) -> tuple[float, float]:
+    def execute_training_steps(
+        self, *, save_model_path: Path | str | None = None
+    ) -> tuple[float, float]:
         self.__scale_features()
         self.__train_model()
         self.__model_metrics()
         self.__plot_predicted_vs_experimental()
         if save_model_path is not None:
-            self.__save_model(save_model_path)
+            self.__save_model(Path(save_model_path))
 
         return self.mae, self.mse
