@@ -11,8 +11,9 @@ from keras import layers, models, utils
 
 
 # Set a random seed
-utils.set_random_seed(42)
-random.set_seed(42)
+RANDOM_SEED = 42
+utils.set_random_seed(RANDOM_SEED)
+random.set_seed(RANDOM_SEED)
 
 
 class NeuralNet:
